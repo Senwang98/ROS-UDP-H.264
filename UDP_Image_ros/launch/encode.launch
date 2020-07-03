@@ -1,0 +1,8 @@
+<launch>
+	<node name="publish_image" pkg = "udp" type = "publish_image" output = "screen">
+		</node>
+	<node name="client" pkg = "udp" type = "client" output = "screen" args="$(arg address) $(arg port_seed)">
+    	</node>
+    <node name="receive_decode_image" pkg = "udp" type = "receive_decode_image" output = "screen">
+    	</node>
+</launch>
