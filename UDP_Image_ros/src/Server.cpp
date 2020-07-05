@@ -14,7 +14,7 @@
 using namespace std;
 using namespace cv;
 // 65540
-#define BUF_LEN 65540 // Larger than maximum UDP packet size
+#define BUF_LEN 65540 // MAX UDP packet size = 65535 = 65515+20(header)
 
 int main(int argc, char *argv[])
 {
@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
     ros::Rate loop_rate(20);
     while (nh.ok())
     {
+        memset(buffer,0,sizeof(buffer));
         do
         {
             recvMsgSize = sock.recvFrom(buffer, BUF_LEN, sourceAddress, sourcePort);
@@ -78,8 +79,9 @@ int main(int argc, char *argv[])
         // cout << "Received packet from " << sourceAddress << ":" << sourcePort << endl;
         // 开始解码
         sensor_msgs::ImagePtr out(new sensor_msgs::Image);
-        ros_h264_streamer::H264Decoder decoder(FRAME_WIDTH, FRAME_HEIGHT);
-        int len = decoder.decode(cnt, longbuf, out);
+        H264Decoder *decoder = new H264Decoder(FRAME_WIDTH, FRAME_HEIGHT);
+        // H264Decoder decoder(FRAME_WIDTH, FRAME_HEIGHT);
+        int len = decoder->decode(cnt, longbuf, out);
         // std::cout << "Image decoded, decoded image size is: " << out->width << "x" << out->height << std::endl;
 
         if (out->width > 0 && out->height > 0)
@@ -87,20 +89,23 @@ int main(int argc, char *argv[])
             cv_bridge::CvImagePtr cvout = cv_bridge::toCvCopy(out);
             cv::Mat img = cvout->image;
             // cv::imshow("decoded image display", img);
-            // cv::waitKey(30);
+            // cv::waitKey(20);
 
             // topic 发送
-            sensor_msgs::ImagePtr img_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img).toImageMsg();
-            pub.publish(img_msg);
-            loop_rate.sleep();
+            // sensor_msgs::ImagePtr img_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img).toImageMsg();
+            // pub.publish(img_msg);
+            // loop_rate.sleep();
         }
 
         clock_t next_cycle = clock();
         double duration = (next_cycle - last_cycle) / (double)CLOCKS_PER_SEC;
-        // cout << "\teffective FPS:" << (1 / duration) << " \tkbps:" << (PACK_SIZE * total_pack / duration / 1024 * 8) << endl;
+        cout << "\teffective FPS:" << (1 / duration) << " \tkbps:" << (PACK_SIZE * total_pack / duration / 1024 * 8) << endl;
 
         // cout << next_cycle - last_cycle;
         last_cycle = next_cycle;
+
+        delete longbuf;
+        delete decoder;
     }
     ros::spin();
     return 0;

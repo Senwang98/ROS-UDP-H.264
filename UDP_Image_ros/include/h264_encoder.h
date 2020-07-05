@@ -8,42 +8,39 @@
 struct x264_param_t;
 struct x264_t;
 
-namespace ros_h264_streamer
+struct H264_API H264EncoderResult
 {
+    H264EncoderResult() : frame_size(0), frame_data(0) {}
+    int frame_size;
+    uint8_t *frame_data;
+};
 
-    struct H264_API H264EncoderResult
-    {
-        H264EncoderResult() : frame_size(0), frame_data(0) {}
+class H264EncoderImpl;
 
-        int frame_size;
-        uint8_t *frame_data;
-    };
+class H264_API H264Encoder
+{
+public:
+    // 画面质量1～100依次代表画质下降
+    // FPS通过fps_num / fps_den给出
+    H264Encoder(int width, int height, int quality_level, int fps_num, int fps_den, const std::string &encoding, bool streaming = true);
 
-    struct H264EncoderImpl;
+    H264EncoderResult encode(const sensor_msgs::ImageConstPtr &img, uint64_t pts = 0);
+    // ~H264Encoder()
+    // {
+    //     delete impl;
+    // }
+    x264_param_t *GetParameters();
 
-    class H264_API H264Encoder
-    {
-    public:
-        /* Quality can scale from 1 to 100, 1 being (very) high-quality, 100 being (very) low */
-        /* FPS is given as a fraction */
-        H264Encoder(int width, int height, int quality_level, int fps_num, int fps_den, const std::string &encoding, bool streaming = true);
+    x264_t *GetEncoder();
 
-        H264EncoderResult encode(const sensor_msgs::ImageConstPtr &img, uint64_t pts = 0);
+    /* Actual type: x264_picture_t */
+    void *GetPicIn();
 
-        x264_param_t *GetParameters();
+    /* Actual type: x264_picture_t */
+    void *GetPicOut();
 
-        x264_t *GetEncoder();
-
-        /* Actual type: x264_picture_t */
-        void *GetPicIn();
-
-        /* Actual type: x264_picture_t */
-        void *GetPicOut();
-
-    private:
-        boost::shared_ptr<H264EncoderImpl> impl;
-    };
-
-} // namespace ros_h264_streamer
+private:
+    boost::shared_ptr<H264EncoderImpl> impl;
+};
 
 #endif

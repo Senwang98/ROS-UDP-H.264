@@ -26,6 +26,7 @@ vector<uchar> encoded;
 clock_t last_cycle;
 unsigned short servPort;
 string servAddress;
+// ros_h264_streamer::H264Encoder *encoder = new ros_h264_streamer::H264Encoder(1920, 1080, 20, 30, 1, sensor_msgs::image_encodings::BGR8);
 
 void Callback(const sensor_msgs::ImageConstPtr &cam_image)
 {
@@ -50,12 +51,15 @@ void Callback(const sensor_msgs::ImageConstPtr &cam_image)
     cv_bridge::CvImage cvmsg(header, "bgr8", frame);
     sensor_msgs::ImagePtr msg = cvmsg.toImageMsg();
     // 开始编码
-    ros_h264_streamer::H264Encoder encoder(msg->width, msg->height, 20, 30, 1, msg->encoding);
+    // H264EncoderImpl t(msg->width, msg->height, 20, 30, 1, msg->encoding);
+    H264Encoder *encoder = new H264Encoder(msg->width, msg->height, 20, 30, 1, msg->encoding);
+    // ros_h264_streamer::H264Encoder encoder(msg->width, msg->height, 20, 30, 1, msg->encoding);
     ros::Time before_encoding = ros::Time::now();
-    ros_h264_streamer::H264EncoderResult res = encoder.encode(msg);
+    H264EncoderResult res = encoder->encode(msg);
     ros::Time after_encoding = ros::Time::now();
+    
 
-    ros::Duration encoding_duration = after_encoding - before_encoding;
+    // ros::Duration encoding_duration = after_encoding - before_encoding;
     // std::cout << "Image encoded, encoded size is " << res.frame_size << std::endl;
     // std::cout << "Encoding took " << encoding_duration << std::endl;
 
@@ -75,12 +79,13 @@ void Callback(const sensor_msgs::ImageConstPtr &cam_image)
 
     // waitKey(FRAME_INTERVAL);
 
-    clock_t next_cycle = clock();
-    double duration = (next_cycle - last_cycle) / (double)CLOCKS_PER_SEC;
+    // clock_t next_cycle = clock();
+    // double duration = (next_cycle - last_cycle) / (double)CLOCKS_PER_SEC;
     // cout << "\teffective FPS:" << (1 / duration) << " \tkbps:" << (PACK_SIZE * total_pack / duration / 1024 * 8) << endl;
 
     // cout << next_cycle - last_cycle;
-    last_cycle = next_cycle;
+    // last_cycle = next_cycle;
+    delete encoder;
 
     // // 开始解码
     // sensor_msgs::ImagePtr out(new sensor_msgs::Image);

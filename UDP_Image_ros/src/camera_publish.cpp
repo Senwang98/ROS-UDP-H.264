@@ -39,6 +39,7 @@ int main(int argc, char **argv)
         capture >> frame;
         // Rect rect(0, 0, 672, 376);
         // Mat img = frame(rect);
+        // cv::resize(img, img, cv::Size(1920, 1080));
         // cv::imshow("img", frame);
         // cv::waitKey(0);
         sensor_msgs::ImagePtr img_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", frame).toImageMsg();
