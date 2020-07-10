@@ -13,7 +13,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <ros/types.h>
-
+#include "config.h"
 using namespace std;
 using namespace cv;
 
@@ -35,14 +35,13 @@ int main(int argc, char **argv)
 
     while (nh.ok())
     {
-        Mat frame;
-        capture >> frame;
+        cv::Mat test_img = cv::imread("/home/wangsen/UDP/src/UDP_Image_ros/img_1.bmp", 1);
+        sensor_msgs::ImagePtr img_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", test_img).toImageMsg();
+        // Mat frame;
+        // capture >> frame;
         // Rect rect(0, 0, 672, 376);
-        // Mat img = frame(rect);
-        // cv::resize(img, img, cv::Size(1920, 1080));
-        // cv::imshow("img", frame);
-        // cv::waitKey(0);
-        sensor_msgs::ImagePtr img_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", frame).toImageMsg();
+        // frame = frame(rect);
+        // sensor_msgs::ImagePtr img_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", frame).toImageMsg();
         pub.publish(img_msg);
         loop_rate.sleep();
     }

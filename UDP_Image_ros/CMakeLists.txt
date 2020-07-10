@@ -38,6 +38,9 @@ target_link_libraries(publish_image ${catkin_LIBRARIES} ${OpenCV_LIBS})
 add_executable(receive_decode_image src/receive_decode_image.cpp)
 target_link_libraries(receive_decode_image ${catkin_LIBRARIES} ${OpenCV_LIBS})
 
+add_executable(test src/test.cpp src/decoder_test.cpp)
+target_link_libraries(test ${catkin_LIBRARIES} ${OpenCV_LIBS} ${catkin_LIBRARIES} x264 avcodec avutil swscale)
+
 #cmake_minimum_required(VERSION 2.8)
 #project( lan_vid_pseudostream )
 #find_package( OpenCV REQUIRED )

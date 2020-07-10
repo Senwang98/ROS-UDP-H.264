@@ -1,8 +1,10 @@
 #include <h264_decoder.h>
 
 #include <sensor_msgs/image_encodings.h>
-
+#include "config.h"
 #include <stdint.h>
+#include <iostream>
+using namespace std;
 #ifndef UINT64_C
 typedef uint64_t UINT64_C;
 #endif
@@ -67,6 +69,7 @@ public:
         avpkt.data = frame_data;
         int got_picture;
         int len = avcodec_decode_video2(c, picture, &got_picture, &avpkt);
+        // cout << "mytest len = " << len << endl;
         if (len < 0)
         {
             return len;

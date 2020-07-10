@@ -28,13 +28,12 @@ unsigned short servPort;
 string servAddress;
 // ros_h264_streamer::H264Encoder *encoder = new ros_h264_streamer::H264Encoder(1920, 1080, 20, 30, 1, sensor_msgs::image_encodings::BGR8);
 
+
+
 void Callback(const sensor_msgs::ImageConstPtr &cam_image)
 {
-    // cout << "OK" << endl;
     cv_bridge::CvImagePtr cv_ptr;
-
     Mat frame, send;
-
     static int i = 0;
     // cout << "frame = " << i++ << endl;
     cv_ptr = cv_bridge::toCvCopy(cam_image, sensor_msgs::image_encodings::BGR8);
@@ -58,15 +57,26 @@ void Callback(const sensor_msgs::ImageConstPtr &cam_image)
     H264EncoderResult res = encoder->encode(msg);
     ros::Time after_encoding = ros::Time::now();
     
+    // // 文件的保存
+    // char *path = "/home/wangsen/桌面/encode_YUV420P.h264";
+    // FILE *fp;
+    // if ((fp = fopen(path, "wb")) == NULL)
+    // {
+    //     cout << "文件打开失败！" << endl;
+    //     exit(0);
+    // }
+    // if (fwrite(res.frame_data, sizeof(uint8_t), res.frame_size, fp) != 1)
+    // {
+    //     cout << "frame_size = " << res.frame_size << endl;
+    //     cout << "写入成功！" << endl;
+    // }
+    // fclose(fp);
 
-    // ros::Duration encoding_duration = after_encoding - before_encoding;
-    // std::cout << "Image encoded, encoded size is " << res.frame_size << std::endl;
-    // std::cout << "Encoding took " << encoding_duration << std::endl;
-
+    // 发送
     int total_pack = 1 + (res.frame_size) / PACK_SIZE;
     // cout << "**********" << endl;
     // cout << "Total pack = " << total_pack << endl;
-    // cout << "Total size = " << res.frame_size << endl;
+    cout << "Total size = " << res.frame_size << endl;
     // cout << endl;
 
     int ibuf[1];
@@ -75,7 +85,12 @@ void Callback(const sensor_msgs::ImageConstPtr &cam_image)
     // cout << "servAddress:" << servAddress << " servPort:" << servPort << endl;
 
     for (int i = 0; i < total_pack; i++)
+    {
         sock.sendTo(&res.frame_data[i * PACK_SIZE], PACK_SIZE, servAddress, servPort);
+    }
+    // int left_data = res.frame_size - PACK_SIZE * (total_pack - 1);
+    // cout << "left data = " << left_data << endl;
+    // sock.sendTo(&res.frame_data[i * PACK_SIZE], left_data, servAddress, servPort);
 
     // waitKey(FRAME_INTERVAL);
 
@@ -85,11 +100,11 @@ void Callback(const sensor_msgs::ImageConstPtr &cam_image)
 
     // cout << next_cycle - last_cycle;
     // last_cycle = next_cycle;
-    delete encoder;
+    
 
     // // 开始解码
     // sensor_msgs::ImagePtr out(new sensor_msgs::Image);
-    // ros_h264_streamer::H264Decoder decoder(msg->width, msg->height);
+    // H264Decoder decoder(msg->width, msg->height);
 
     // ros::Time before_decoding = ros::Time::now();
     // int len = decoder.decode(res.frame_size, res.frame_data, out);
@@ -101,36 +116,9 @@ void Callback(const sensor_msgs::ImageConstPtr &cam_image)
     // cv_bridge::CvImagePtr cvout = cv_bridge::toCvCopy(out);
     // std::cout << "Saving to disk" << std::endl;
     // cv::imshow("test", cvout->image);
-    // cv::waitKey(30);
+    // cv::waitKey(0);
+    delete encoder;
 
-    // resize(frame, send, Size(FRAME_WIDTH, FRAME_HEIGHT), 0, 0, INTER_LINEAR);
-    // vector<int> compression_params;
-    // compression_params.push_back(CV_IMWRITE_JPEG_QUALITY);
-    // compression_params.push_back(jpegqual);
-
-    // imencode(".jpg", send, encoded, compression_params);
-    // //  imshow("send", send);
-    // //  cvWaitKey(1);
-    // int total_pack = 1 + (encoded.size() - 1) / PACK_SIZE;
-
-    // int ibuf[1];
-    // ibuf[0] = total_pack;
-    // sock.sendTo(ibuf, sizeof(int), servAddress, servPort);
-
-    // for (int i = 0; i < total_pack; i++)
-    //     sock.sendTo(&encoded[i * PACK_SIZE], PACK_SIZE, servAddress, servPort);
-
-    // // waitKey(FRAME_INTERVAL);
-
-    // clock_t next_cycle = clock();
-    // double duration = (next_cycle - last_cycle) / (double)CLOCKS_PER_SEC;
-    // cout << "\teffective FPS:" << (1 / duration) << " \tkbps:" << (PACK_SIZE * total_pack / duration / 1024 * 8) << endl;
-
-    // cout << next_cycle - last_cycle;
-    // last_cycle = next_cycle;
-
-    // if (i++ > 5)
-    //     i = 5;
 }
 
 int main(int argc, char **argv)

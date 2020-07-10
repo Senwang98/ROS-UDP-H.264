@@ -51,7 +51,7 @@ public:
             m_param.b_intra_refresh = 0;
             m_param.b_repeat_headers = 0;
             m_param.b_annexb = 0;
-            m_param.i_csp = X264_CSP_I420;
+            m_param.i_csp = AV_PIX_FMT_YUV420P;
         }
 
         Init(&m_param);
@@ -113,8 +113,10 @@ private:
         m_width = param->i_width;
         m_height = param->i_height;
         m_stride = m_width * 3;
+        // x264_picture_alloc(&m_pic_in, AV_PIX_FMT_YUV420P, m_width, m_height);
         x264_picture_alloc(&m_pic_in, X264_CSP_I420, m_width, m_height);
         // std::cout << "encoding = " << encoding << std::endl;
+        // AV_PIX_FMT_YUV420P
         if (encoding == sensor_msgs::image_encodings::RGB8)
         {
             m_convert_ctx = sws_getContext(m_width, m_height, AV_PIX_FMT_RGB24, m_width, m_height, AV_PIX_FMT_YUV420P, SWS_FAST_BILINEAR, NULL, NULL, NULL);

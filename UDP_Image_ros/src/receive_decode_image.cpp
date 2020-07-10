@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "receive_decode_image");
     ros::NodeHandle nh;
-    ros::Subscriber img = nh.subscribe<sensor_msgs::Image>("/image/decode", 1000, Callback);
+    ros::Subscriber img = nh.subscribe<sensor_msgs::Image>("/camera/front120", 1000, Callback);
     ros::Rate loop_rate(1);
     ros::spin();
 }
