@@ -1,28 +1,24 @@
 ## ROS-UDP-H.264-Image
 
-**运行流程：**  
+**运行流程：**
 
-**相机端：**
+##### 		1. ready节点，发送ready信号，告诉编码端开始编码
 
-`rosrun udp publish_image`  
+​	**`rosrun udp ready`**  
 
-**client端：**
+**2. 解码端：**  
 
-`rosrun udp client 'server-ip' 'server-port'`  
+​	**`rosrun udp server  `**   
 
-`eg. rosrun udp client 127.0.0.1 11311`
+**3. 显示端（如需）：**  
 
- - 'server-ip' 代表服务器端 IP 地址 
- - 'server-port'代表服务器端 端口号
+​	topic:  /camera/front120
 
-**server端：**  
+​	**`rosrun udp receive_decode_image`**   
 
-`rosrun udp server 'server-port' `   
 
-`eg. rosrun udp server 11311`
 
- - 'server-port'代表服务器端 端口号
+**Note:**
 
-**显示端：**  
+- ​	修改config.h参数后执行catkin_make重新编译。
 
-`rosrun udp receive_decode_image`   

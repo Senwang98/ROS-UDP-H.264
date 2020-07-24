@@ -1,5 +1,4 @@
 import av
-import sys
 
 
 def h264_to_jpg():

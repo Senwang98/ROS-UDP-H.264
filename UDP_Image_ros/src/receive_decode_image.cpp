@@ -17,12 +17,18 @@ static int i = 0;
 void Callback(const sensor_msgs::ImageConstPtr &cam_image)
 {
     cv_bridge::CvImagePtr cv_ptr;
+    ros::Time stamp = cam_image->header.stamp;
+    cout << "显示端时间戳 = " << stamp << endl;
     Mat frame;
     cv_ptr = cv_bridge::toCvCopy(cam_image, sensor_msgs::image_encodings::BGR8);
     frame = cv_ptr->image;
-    cv::imwrite("/home/wangsen/UDP/src/UDP_Image_ros/image/" + to_string(i++) + ".jpg", frame);
-    cv::imshow("client", frame);
-    cv::waitKey(30);
+    if (frame.rows > 0 && frame.cols > 0)
+    {
+        cv::resize(frame, frame, cv::Size(960, 640));
+        namedWindow("result", CV_WINDOW_NORMAL);
+        imshow("result", frame);
+        waitKey(20);
+    }
 }
 
 int main(int argc, char **argv)

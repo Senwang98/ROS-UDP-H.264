@@ -1,0 +1,8 @@
+<launch>
+	<node name="ready" pkg = "udp" type = "ready" output = "screen">
+		</node>
+	<node name="server" pkg = "udp" type = "server" output = "screen">
+    	</node>
+    <node name="receive_decode_image" pkg = "udp" type = "receive_decode_image" output = "screen">
+    	</node>
+</launch>

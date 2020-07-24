@@ -41,6 +41,16 @@ void H264Decode::init()
     pFrameBGR = av_frame_alloc();
 }
 
+H264Decode::~H264Decode()
+{
+    avcodec_close(c);
+    av_free(c);
+    av_free(frame);
+    av_free(pFrameBGR);
+    sws_freeContext(img_convert_ctx);
+    delete (out_buffer);
+}
+
 void H264Decode::decode(unsigned char *inputbuf, size_t size)
 {
 
@@ -53,8 +63,14 @@ void H264Decode::decode(unsigned char *inputbuf, size_t size)
     int len, got_frame;
 
     len = avcodec_decode_video2(c, frame, &got_frame, &avpkt);
-    cout << "got_frame = " << got_frame << endl;
-    cout << "len = " << len << endl;
+    if (got_frame == 0)
+    {
+        len = avcodec_decode_video2(c, frame, &got_frame, &avpkt);
+        // cout << "第二次解码开始！" << endl;
+    }
+    // cout << "got_frame = " << got_frame << endl;
+    // cout << "len = " << len << endl;
+
     if (len < 0)
     {
         matReady = false;
@@ -96,13 +112,20 @@ void H264Decode::decode(unsigned char *inputbuf, size_t size)
     }
 }
 
+static int cnt = 0;
 void H264Decode::play()
 {
     // cout << "matReady = " << matReady << endl;
     if (matReady)
     {
-        cv::imshow("decode", pCvMat);
-        cv::waitKey(0);
+        // cv::imshow("decode", pCvMat);
+        cv::Mat tmp;
+        cv::resize(pCvMat, tmp, cv::Size(600, 400));
+
+        cv::imshow("decode", tmp);
+        // cout << "size = " << pCvMat.rows << " " << pCvMat.cols << endl;
+        // cv::imwrite("/home/wangsen/UDP/src/UDP_Image_ros/image/" + to_string(cnt++) + ".bmp", pCvMat);
+        cv::waitKey(5);
     }
 }
 

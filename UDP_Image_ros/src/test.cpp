@@ -17,13 +17,13 @@
 using namespace std;
 using namespace cv;
 
-unsigned char buf[700000]; //should be max enough
+unsigned char buf[700000];
 
 int main(int argc, char *argv[])
 {
     ros::init(argc, argv, "test");
     ros::NodeHandle nh;
-    
+
     H264Decode decoder;
 
     std::ifstream fin("/home/wangsen/桌面/Encode_result/encode_output.h264", std::ios_base::binary);

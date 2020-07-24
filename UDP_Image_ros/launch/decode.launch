@@ -1,4 +1,0 @@
-<launch>
-	<node name="server" pkg = "udp" type = "server" output = "screen" args="$(arg port_recv)">
-    	</node>
-</launch>

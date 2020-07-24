@@ -19,6 +19,11 @@ extern "C"
 #include "libavformat/avformat.h"
 //新版里的图像转换结构需要引入的头文件
 #include "libswscale/swscale.h"
+#include "libavutil/imgutils.h"
+#include "libavutil/mem.h"
+#include "libavutil/opt.h"
+#include "libavutil/mathematics.h"
+#include "libavutil/samplefmt.h"
 };
 
 #if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(55, 28, 1)
@@ -30,7 +35,7 @@ class H264Decode
 
 public:
     H264Decode();
-    //    ~H264Decode(); TODO
+    ~H264Decode();
     void init();
     void decode(unsigned char *inputbuf, size_t size);
     void play();

@@ -387,6 +387,7 @@ int UDPSocket::recvFrom(void *buffer, int bufferLen, string &sourceAddress,
     {
         throw SocketException("Receive failed (recvfrom())", true);
     }
+    // cout << "ok" << endl;
     sourceAddress = inet_ntoa(clntAddr.sin_addr);
     sourcePort = ntohs(clntAddr.sin_port);
     return rtn;
